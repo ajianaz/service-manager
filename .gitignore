@@ -1,4 +1,6 @@
+/postgres-data
 /node_modules
 .env
+.env.production
 .env.prod
 .env.local

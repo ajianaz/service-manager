@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: service-manager
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.production
+    depends_on:
+      - db
+      - redis
+    restart: always
+    networks:
+      - multi-services
+    command: ["pm2-runtime", "start", "server.js", "--name", "service-manager", "-i", "1"]
+
+  db:
+    image: postgres:15
+    container_name: service-manager-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: securepassword
+      POSTGRES_DB: service_manager
+    volumes:
+      #setting untuk membuat data tetap utuh walaupun container di drop/restart
+      - ./postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: service-manager-redis
+    restart: always
+
+networks:
+  multi-services:
+    external: true
